@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Hachem | Menu Digital Meknès</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f0f0f',
+                        cardbg: '#161616',
+                        gold: '#D4AF37',
+                        goldlight: '#F5E6AB',
+                        golddark: '#9A7B1C',
+                        bordergray: '#262626',
+                        subtle: '#a1a1aa'
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: #f5f5f7;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .font-serif {
+            font-family: 'Cinzel', serif;
+        }
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #F5E6AB 0%, #D4AF37 50%, #9A7B1C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-border-glow {
+            transition: all 0.3s ease;
+        }
+        .gold-border-glow:hover {
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+            border-color: #D4AF37;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-gold selection:text-black">
+    <!-- Header Section -->
+    <header class="relative border-b border-gold/30 bg-black/95 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4 py-6 text-center">
+            <!-- Brand Badge -->
+            <div class="inline-block border border-gold/40 px-4 py-1 mb-2">
+                <span class="font-serif tracking-[0.25em] text-[10px] sm:text-xs uppercase text-gold">Meknès • Café & Salon de Thé</span>
+            </div>
+
+            <h1 class="font-serif text-3xl sm:text-5xl font-bold tracking-[0.15em] uppercase my-2 gold-gradient-text">
+                CAFÉ HACHEM
+            </h1>
+            <p class="text-[11px] sm:text-xs tracking-widest text-subtle uppercase mb-5">
+                Une expérience raffinée au quotidien
+            </p>
+
+            <!-- Live Search Input -->
+            <div class="relative max-w-md mx-auto">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gold/70">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </div>
+                <input
+                    type="text"
+                    id="searchInput"
+                    onkeyup="filterMenuItems()"
+                    placeholder="Rechercher (ex: Omelette, Café, Coca)..."
+                    class="w-full pl-10 pr-10 py-2.5 bg-cardbg border border-gold/30 rounded-none text-xs text-white placeholder-subtle focus:outline-none focus:border-gold transition-colors tracking-wide"
+                >
+                <button
+                    id="clearSearch"
+                    onclick="clearSearchInput()"
+                    class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-subtle hover:text-gold"
+                >
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Categories -->
+        <div class="border-t border-bordergray bg-black">
+            <div class="max-w-5xl mx-auto px-4">
+                <div class="flex space-x-2 overflow-x-auto no-scrollbar py-3 justify-start lg:justify-center" id="categoryContainer">
+                    <button onclick="selectCategory('all')" id="cat-all" class="cat-btn text-xs tracking-widest uppercase px-5 py-2 transition-all font-serif bg-gold text-black font-semibold whitespace-nowrap">
+                        Tous
+                    </button>
+                    <button onclick="selectCategory('breakfast')" id="cat-breakfast" class="cat-btn text-xs tracking-widest uppercase px-5 py-2 transition-all font-serif text-subtle hover:text-gold border border-transparent whitespace-nowrap">
+                        Petits-Déjeuners
+                    </button>
+                    <button onclick="selectCategory('drinks')" id="cat-drinks" class="cat-btn text-xs tracking-widest uppercase px-5 py-2 transition-all font-serif text-subtle hover:text-gold border border-transparent whitespace-nowrap">
+                        Boissons & Douceurs
+                    </button>
+                    <button onclick="selectCategory('sodas')" id="cat-sodas" class="cat-btn text-xs tracking-widest uppercase px-5 py-2 transition-all font-serif text-subtle hover:text-gold border border-transparent whitespace-nowrap">
+                        Sodas & Gazeuses
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Menu Area -->
+    <main class="max-w-5xl mx-auto px-4 py-8 flex-1 w-full">
+
+        <!-- Active Section Label -->
+        <div class="flex items-center justify-between mb-8 border-b border-gold/30 pb-3">
+            <h2 id="currentCategoryTitle" class="font-serif text-lg sm:text-xl tracking-widest text-gold uppercase flex items-center gap-2">
+                <i class="fa-solid fa-crown text-xs"></i> <span id="titleText">Notre Carte</span>
+            </h2>
+            <span id="itemCount" class="text-[10px] tracking-widest uppercase text-subtle font-mono">
+                -- Article(s)
+            </span>
+        </div>
+
+        <!-- Empty Search Result State -->
+        <div id="emptyState" class="hidden text-center py-16 px-4 border border-dashed border-gold/20 my-4">
+            <i class="fa-solid fa-utensils text-2xl text-gold/40 mb-3"></i>
+            <h3 class="font-serif text-sm tracking-widest text-white uppercase mb-1">Aucun article trouvé</h3>
+            <p class="text-xs text-subtle">Veuillez essayer un autre terme de recherche.</p>
+        </div>
+
+        <!-- Section 1: Formules Petit-Déjeuner -->
+        <section id="section-breakfast" class="mb-14 menu-section">
+            <div class="flex items-center gap-3 mb-6">
+                <i class="fa-solid fa-mug-hot text-gold text-base"></i>
+                <h3 class="font-serif text-base sm:text-lg tracking-widest text-white uppercase">Formules Petit-Déjeuner</h3>
+                <div class="h-[1px] bg-gradient-to-r from-gold/40 to-transparent flex-1"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="breakfastGrid">
+
+                <!-- Formule Classique -->
+                <div onclick="openModal('Formule Classique', '20 DH', 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80', 'Inclus: Pain au chocolat ou croissant, pain frais avec beurre et confiture, café au lait ou thé, et un petit jus d\'orange pressé.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-gold/30 overflow-hidden flex flex-col justify-between gold-border-glow group">
+                    <div>
+                        <div class="relative h-48 w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80" alt="Formule Classique" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-3 right-3 font-mono text-sm font-bold text-gold bg-black/80 px-3 py-1 border border-gold/50 backdrop-blur-sm">20 DH</span>
+                        </div>
+                        <div class="p-5">
+                            <h4 class="font-serif text-lg font-bold text-white tracking-wide mb-3 border-b border-bordergray pb-2 flex justify-between items-center">
+                                <span>Formule Classique</span>
+                                <i class="fa-solid fa-expand text-xs text-gold/60 group-hover:text-gold"></i>
+                            </h4>
+                            <ul class="space-y-2 text-xs text-subtle">
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>Pain au chocolat ou croissant</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>Pain avec beurre et confiture</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>Café au lait ou thé</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>Petit jus d'orange</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formule Beldi (Text Only) -->
+                <div onclick="openModal('Formule Beldi', '18 DH', '', 'Inclus: 1 Msemen chaud feuilleté, 1 Harcha traditionnelle, accompagnés de fromage, olives noires, amlou, miel pur, beurre doux et un authentique thé à la menthe.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-gold/30 p-6 overflow-hidden flex flex-col justify-between gold-border-glow group">
+                    <div>
+                        <div class="flex justify-between items-start mb-3 border-b border-bordergray pb-3">
+                            <h4 class="font-serif text-lg font-bold text-white tracking-wide">Formule Beldi</h4>
+                            <span class="font-mono text-sm font-bold text-gold bg-black/80 px-3 py-1 border border-gold/50">18 DH</span>
+                        </div>
+                        <ul class="space-y-2 text-xs text-subtle mt-2">
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>1 Msemen & 1 Harcha</span></li>
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>Fromage, olives, amlou, miel et beurre</span></li>
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>Thé à la menthe traditionnel</span></li>
+                        </ul>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-bordergray/50 flex justify-end">
+                        <span class="text-[10px] text-gold/60 uppercase tracking-widest font-serif group-hover:text-gold flex items-center gap-1">Détails <i class="fa-solid fa-chevron-right text-[8px]"></i></span>
+                    </div>
+                </div>
+
+                <!-- Formule Complète -->
+                <div onclick="openModal('Formule Complète', '25 DH', 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80', 'Inclus: 1 Croissant feuilleté, une omelette préparée minute avec pain marocain, garnitures d\'olives et fromage, plus un café noir corsé ou un thé.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-gold/30 overflow-hidden flex flex-col justify-between gold-border-glow group">
+                    <div>
+                        <div class="relative h-48 w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80" alt="Formule Complète" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                            <span class="absolute top-3 right-3 font-mono text-sm font-bold text-gold bg-black/80 px-3 py-1 border border-gold/50 backdrop-blur-sm">25 DH</span>
+                        </div>
+                        <div class="p-5">
+                            <h4 class="font-serif text-lg font-bold text-white tracking-wide mb-3 border-b border-bordergray pb-2 flex justify-between items-center">
+                                <span>Formule Complète</span>
+                                <i class="fa-solid fa-expand text-xs text-gold/60 group-hover:text-gold"></i>
+                            </h4>
+                            <ul class="space-y-2 text-xs text-subtle">
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>1 Croissant feuilleté</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>Omelette & Pain marocain</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>Olives et fromage</span></li>
+                                <li class="flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-0.5"></i> <span>Café noir ou thé</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 2: Boissons & Douceurs -->
+        <section id="section-drinks" class="menu-section">
+            <div class="flex items-center gap-3 mb-6">
+                <i class="fa-solid fa-glass-water text-gold text-base"></i>
+                <h3 class="font-serif text-base sm:text-lg tracking-widest text-white uppercase">Boissons & Douceurs</h3>
+                <div class="h-[1px] bg-gradient-to-r from-gold/40 to-transparent flex-1"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="drinksGrid">
+
+                <!-- Café Noir -->
+                <div onclick="openModal('Café Noir', '8 DH', 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=600&q=80', 'Espresso riche et intense préparé avec des grains sélectionnés.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-bordergray overflow-hidden hover:border-gold/60 transition-all gold-border-glow group">
+                    <div class="relative h-40 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=600&q=80" alt="Café Noir" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                        <span class="absolute top-2.5 right-2.5 font-mono text-xs font-bold text-gold bg-black/80 px-2.5 py-0.5 border border-gold/40">8 DH</span>
+                    </div>
+                    <div class="p-3.5">
+                        <h4 class="text-sm font-semibold text-white flex justify-between items-center">
+                            <span>Café Noir</span>
+                            <i class="fa-solid fa-expand text-[10px] text-gold/50 group-hover:text-gold"></i>
+                        </h4>
+                        <p class="text-[11px] text-subtle mt-0.5">Espresso intense & aromatique</p>
+                    </div>
+                </div>
+
+                <!-- Chocolat Chaud -->
+                <div onclick="openModal('Chocolat Chaud', '8 DH', 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=600&q=80', 'Chocolat chaud onctueux servi avec une mousse légère.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-bordergray overflow-hidden hover:border-gold/60 transition-all gold-border-glow group">
+                    <div class="relative h-40 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=600&q=80" alt="Chocolat Chaud" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                        <span class="absolute top-2.5 right-2.5 font-mono text-xs font-bold text-gold bg-black/80 px-2.5 py-0.5 border border-gold/40">8 DH</span>
+                    </div>
+                    <div class="p-3.5">
+                        <h4 class="text-sm font-semibold text-white flex justify-between items-center">
+                            <span>Chocolat Chaud</span>
+                            <i class="fa-solid fa-expand text-[10px] text-gold/50 group-hover:text-gold"></i>
+                        </h4>
+                        <p class="text-[11px] text-subtle mt-0.5">Onctueux avec mousse légère</p>
+                    </div>
+                </div>
+
+                <!-- Café Crème -->
+                <div onclick="openModal('Café Crème', '8 DH', 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=600&q=80', 'Mélange harmonieux d\'espresso corsé et de lait chaud velouté.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-bordergray overflow-hidden hover:border-gold/60 transition-all gold-border-glow group">
+                    <div class="relative h-40 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=600&q=80" alt="Café Crème" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                        <span class="absolute top-2.5 right-2.5 font-mono text-xs font-bold text-gold bg-black/80 px-2.5 py-0.5 border border-gold/40">8 DH</span>
+                    </div>
+                    <div class="p-3.5">
+                        <h4 class="text-sm font-semibold text-white flex justify-between items-center">
+                            <span>Café Crème</span>
+                            <i class="fa-solid fa-expand text-[10px] text-gold/50 group-hover:text-gold"></i>
+                        </h4>
+                        <p class="text-[11px] text-subtle mt-0.5">Espresso & lait velouté</p>
+                    </div>
+                </div>
+
+                <!-- Jus d'Orange -->
+                <div onclick="openModal('Jus d\'Orange', '12 DH', 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=600&q=80', 'Jus d\'oranges douces fraîchement pressées à la commande.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-bordergray overflow-hidden hover:border-gold/60 transition-all gold-border-glow group">
+                    <div class="relative h-40 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=600&q=80" alt="Jus d'Orange" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                        <span class="absolute top-2.5 right-2.5 font-mono text-xs font-bold text-gold bg-black/80 px-2.5 py-0.5 border border-gold/40">12 DH</span>
+                    </div>
+                    <div class="p-3.5">
+                        <h4 class="text-sm font-semibold text-white flex justify-between items-center">
+                            <span>Jus d'Orange</span>
+                            <i class="fa-solid fa-expand text-[10px] text-gold/50 group-hover:text-gold"></i>
+                        </h4>
+                        <p class="text-[11px] text-subtle mt-0.5">Frais pressé sur commande</p>
+                    </div>
+                </div>
+
+                <!-- Jus de Pomme -->
+                <div onclick="openModal('Jus de Pomme', '12 DH', 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80', 'Jus de pommes fraîches, pur, naturel et rafraîchissant.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-bordergray overflow-hidden hover:border-gold/60 transition-all gold-border-glow group">
+                    <div class="relative h-40 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=600&q=80" alt="Jus de Pomme" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                        <span class="absolute top-2.5 right-2.5 font-mono text-xs font-bold text-gold bg-black/80 px-2.5 py-0.5 border border-gold/40">12 DH</span>
+                    </div>
+                    <div class="p-3.5">
+                        <h4 class="text-sm font-semibold text-white flex justify-between items-center">
+                            <span>Jus de Pomme</span>
+                            <i class="fa-solid fa-expand text-[10px] text-gold/50 group-hover:text-gold"></i>
+                        </h4>
+                        <p class="text-[11px] text-subtle mt-0.5">Pur jus frais & désaltérant</p>
+                    </div>
+                </div>
+
+                <!-- Jus de Banane -->
+                <div onclick="openModal('Jus de Banane', '12 DH', 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=600&q=80', 'Smoothie crémeux de banane fraîche mixée avec du lait frais.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-bordergray overflow-hidden hover:border-gold/60 transition-all gold-border-glow group">
+                    <div class="relative h-40 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=600&q=80" alt="Jus de Banane" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                        <span class="absolute top-2.5 right-2.5 font-mono text-xs font-bold text-gold bg-black/80 px-2.5 py-0.5 border border-gold/40">12 DH</span>
+                    </div>
+                    <div class="p-3.5">
+                        <h4 class="text-sm font-semibold text-white flex justify-between items-center">
+                            <span>Jus de Banane</span>
+                            <i class="fa-solid fa-expand text-[10px] text-gold/50 group-hover:text-gold"></i>
+                        </h4>
+                        <p class="text-[11px] text-subtle mt-0.5">Smoothie doux au lait</p>
+                    </div>
+                </div>
+
+                <!-- Jus d'Avocat (Text Only) -->
+                <div onclick="openModal('Jus d\'Avocat', '15 DH', '', 'Avocat vert et riche mixé selon la recette traditionnelle marocaine avec du lait.')"
+                     class="menu-item cursor-pointer bg-cardbg border border-bordergray p-4 flex flex-col justify-between hover:border-gold/60 transition-all gold-border-glow group">
+                    <div>
+                        <div class="flex justify-between items-center mb-2 border-b border-bordergray pb-2">
+                            <h4 class="text-sm font-semibold text-white">Jus d'Avocat</h4>
+                            <span class="font-mono text-xs font-bold text-gold bg-black/80 px-2.5 py-0.5 border border-gold/40">15 DH</span>
+                        </div>
+                        <p class="text-[11px] text-subtle">Smoothie vert onctueux au lait</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-bordergray/40 flex justify-end">
+                        <span class="text-[10px] text-gold/60 uppercase tracking-widest font-serif group-hover:text-gold flex items-center gap-1">Détails <i class="fa-solid fa-chevron-right text-[8px]"></i></span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 3: Sodas & Boissons Gazeuses -->
+        <section id="section-sodas" class="menu-section">
+            <div class="flex items-center gap-3 mb-6">
+                <i class="fa-solid fa-bottle-water text-gold text-base"></i>
+                <h3 class="font-serif text-base sm:text-lg tracking-widest text-white uppercase">Sodas & Boissons Gazeuses</h3>
+                <div class="h-[1px] bg-gradient-to-r from-gold/40 to-transparent flex-1"></div>
+            </div>
+
+            <!-- Les cartes sont générées par renderSodas() à partir de la liste SODAS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5" id="sodasGrid"></div>
+        </section>
+
+    </main>
+
+    <!-- Modal Popup for Detail View -->
+    <div id="imageModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity duration-300" onclick="closeModal()">
+        <div class="bg-cardbg border border-gold/40 max-w-lg w-full overflow-hidden relative shadow-2xl" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-3 right-3 text-white/80 hover:text-gold bg-black/70 w-8 h-8 flex items-center justify-center rounded-full border border-gold/30 z-10 transition-colors">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+            <div id="modalImgContainer" class="relative h-64 sm:h-72 w-full overflow-hidden">
+                <img id="modalImg" src="" alt="Menu detail" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-cardbg via-transparent to-transparent"></div>
+                <span id="modalPrice" class="absolute bottom-3 right-3 font-mono text-base font-bold text-gold bg-black/80 px-3.5 py-1 border border-gold/50"></span>
+            </div>
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-2" id="textOnlyPriceHeader">
+                    <h3 id="modalTitle" class="font-serif text-xl font-bold text-white tracking-wide gold-gradient-text"></h3>
+                    <span id="modalPriceText" class="font-mono text-base font-bold text-gold bg-black/80 px-3.5 py-1 border border-gold/50 hidden"></span>
+                </div>
+                <p id="modalDesc" class="text-xs text-subtle leading-relaxed mb-4"></p>
+                <button onclick="closeModal()" class="w-full py-2.5 bg-gold text-black font-serif text-xs uppercase font-semibold tracking-widest hover:bg-goldlight transition-colors">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gold/20 bg-black mt-16 pt-10 pb-8">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <div class="inline-block mb-4">
+                <i class="fa-solid fa-qrcode text-gold text-2xl mb-2"></i>
+                <p class="text-xs text-white uppercase tracking-wider font-serif">Menu Numérique sur Table</p>
+            </div>
+            <p class="text-xs text-subtle max-w-md mx-auto mb-8 leading-relaxed">
+                Veuillez passer votre commande directement auprès de votre serveur. Merci de votre visite au Café Hachem.
+            </p>
+            <div class="pt-6 border-t border-bordergray flex flex-col sm:flex-row items-center justify-between text-[11px] text-subtle gap-4">
+                <div class="font-serif tracking-widest text-gold/80">CAFÉ HACHEM © 2026</div>
+                <div>Meknès, Maroc</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Logic Script -->
+    <script>
+        /* ============================================================
+           SODAS & BOISSONS GAZEUSES
+           Modifiez librement les prix, volumes et descriptions ici.
+           Les cartes de la section sont générées automatiquement.
+           ============================================================ */
+        const SODAS = [
+            {
+                name: 'Coca-Cola',
+                variant: '',
+                price: '10 DH',
+                volume: '33 cl',
+                desc: 'Le classique pétillant au goût inimitable, servi bien frais.'
+            },
+            {
+                name: 'Hawai',
+                variant: '',
+                price: '10 DH',
+                volume: '33 cl',
+                desc: 'Le soda fruité emblématique, généreux et rafraîchissant.'
+            },
+            {
+                name: 'Poms',
+                variant: '',
+                price: '10 DH',
+                volume: '33 cl',
+                desc: 'La boisson fruitée emblématique, douce et rafraîchissante.'
+            },
+            {
+                name: 'Schweppes',
+                variant: 'Citron',
+                price: '12 DH',
+                volume: '33 cl',
+                desc: 'Soda pétillant au citron, vif et désaltérant.'
+            },
+            {
+                name: 'Oulmès',
+                variant: 'Naturelle',
+                price: '10 DH',
+                volume: '50 cl',
+                desc: 'Eau minérale naturelle, pure et équilibrée.'
+            },
+            {
+                name: 'Oulmès',
+                variant: 'Mojito',
+                price: '12 DH',
+                volume: '50 cl',
+                desc: 'Eau minérale aromatisée au mojito, légère et désaltérante.'
+            },
+            {
+                name: 'Oulmès',
+                variant: 'Tropical',
+                price: '12 DH',
+                volume: '50 cl',
+                desc: 'Eau minérale aromatisée aux fruits tropicaux, douce et rafraîchissante.'
+            },
+            {
+                name: 'Oulmès',
+                variant: 'Fruits Rouges',
+                price: '12 DH',
+                volume: '50 cl',
+                desc: 'Eau minérale aromatisée aux fruits rouges, fruitée et rafraîchissante.'
+            },
+            {
+                name: 'Oulmès',
+                variant: 'Orange',
+                price: '12 DH',
+                volume: '50 cl',
+                desc: 'Eau minérale aromatisée au parfum orange, douce et rafraîchissante.'
+            }
+        ];
+
+        /* Chaque entrée décrit une section : clé de catégorie, conteneur,
+           grille et type d'affichage des cartes. */
+        const SECTIONS = [
+            { key: 'breakfast', sectionId: 'section-breakfast', gridId: 'breakfastGrid', display: 'flex' },
+            { key: 'drinks', sectionId: 'section-drinks', gridId: 'drinksGrid', display: 'block' },
+            { key: 'sodas', sectionId: 'section-sodas', gridId: 'sodasGrid', display: 'flex' }
+        ];
+
+        const CATEGORY_TITLES = {
+            all: 'Notre Carte',
+            breakfast: 'Petits-Déjeuners',
+            drinks: 'Boissons & Douceurs',
+            sodas: 'Sodas & Boissons Gazeuses'
+        };
+
+        let activeCategory = 'all';
+
+        /* Génère les cartes de la section Sodas. */
+        function renderSodas() {
+            const grid = document.getElementById('sodasGrid');
+
+            grid.innerHTML = SODAS.map((drink, index) => `
+                <div class="menu-item cursor-pointer bg-cardbg border border-bordergray p-4 flex flex-col justify-between h-full hover:border-gold/60 transition-all gold-border-glow group"
+                     data-index="${index}">
+                    <div>
+                        <div class="flex justify-between items-center gap-2 mb-2 border-b border-bordergray pb-2">
+                            <div class="min-w-0">
+                                <h4 class="text-sm font-semibold text-white leading-tight truncate">${drink.name}</h4>
+                                ${drink.variant ? `<span class="text-[9px] uppercase tracking-widest text-gold/70">${drink.variant}</span>` : ''}
+                            </div>
+                            <span class="font-mono text-xs font-bold text-gold bg-black/80 px-2.5 py-0.5 border border-gold/40 whitespace-nowrap">${drink.price}</span>
+                        </div>
+                        <p class="text-[11px] text-subtle leading-relaxed">${drink.desc}</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-bordergray/40 flex items-center justify-between">
+                        <span class="text-[9px] uppercase tracking-widest text-subtle">${drink.volume}</span>
+                        <span class="text-[10px] text-gold/60 uppercase tracking-widest font-serif group-hover:text-gold flex items-center gap-1">Détails <i class="fa-solid fa-chevron-right text-[8px]"></i></span>
+                    </div>
+                </div>
+            `).join('');
+
+            grid.querySelectorAll('.menu-item').forEach(card => {
+                card.addEventListener('click', () => {
+                    const drink = SODAS[Number(card.dataset.index)];
+                    const title = [drink.name, drink.variant].filter(Boolean).join(' ');
+                    openModal(title, drink.price, '', drink.desc);
+                });
+            });
+        }
+
+        /* Recherche insensible aux accents (ex: « oulmes » trouve « Oulmès »). */
+        function normalizeText(value) {
+            return value
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function selectCategory(cat) {
+            activeCategory = cat;
+
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = "cat-btn text-xs tracking-widest uppercase px-5 py-2 transition-all font-serif text-subtle hover:text-gold border border-transparent whitespace-nowrap";
+            });
+
+            const activeBtn = document.getElementById(`cat-${cat}`);
+            if (activeBtn) {
+                activeBtn.className = "cat-btn text-xs tracking-widest uppercase px-5 py-2 transition-all font-serif bg-gold text-black font-semibold whitespace-nowrap";
+            }
+
+            document.getElementById('titleText').textContent = CATEGORY_TITLES[cat] || 'Notre Carte';
+            filterMenuItems();
+        }
+
+        function filterMenuItems() {
+            const query = normalizeText(document.getElementById('searchInput').value.trim());
+            const clearBtn = document.getElementById('clearSearch');
+
+            clearBtn.classList.toggle('hidden', query === '');
+
+            let totalVisible = 0;
+
+            SECTIONS.forEach(section => {
+                const sectionEl = document.getElementById(section.sectionId);
+                const gridEl = document.getElementById(section.gridId);
+                let visibleCount = 0;
+
+                gridEl.querySelectorAll('.menu-item').forEach(item => {
+                    const matchesQuery = normalizeText(item.textContent).includes(query);
+                    const matchesCategory = activeCategory === 'all' || activeCategory === section.key;
+
+                    if (matchesQuery && matchesCategory) {
+                        item.style.display = section.display;
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                sectionEl.style.display = visibleCount > 0 ? 'block' : 'none';
+                totalVisible += visibleCount;
+            });
+
+            document.getElementById('itemCount').textContent = `${totalVisible} ARTICLE${totalVisible > 1 ? 'S' : ''}`;
+            document.getElementById('emptyState').classList.toggle('hidden', totalVisible > 0);
+        }
+
+        function clearSearchInput() {
+            document.getElementById('searchInput').value = '';
+            filterMenuItems();
+        }
+
+        function openModal(title, price, imgSrc, desc) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalDesc').textContent = desc;
+
+            const imgContainer = document.getElementById('modalImgContainer');
+            const modalPrice = document.getElementById('modalPrice');
+            const modalPriceText = document.getElementById('modalPriceText');
+
+            if (imgSrc && imgSrc.trim() !== '') {
+                document.getElementById('modalImg').src = imgSrc;
+                imgContainer.classList.remove('hidden');
+                modalPrice.textContent = price;
+                modalPriceText.classList.add('hidden');
+            } else {
+                imgContainer.classList.add('hidden');
+                modalPriceText.textContent = price;
+                modalPriceText.classList.remove('hidden');
+            }
+
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        /* Initialisation (le script est en bas de page, le DOM est prêt). */
+        renderSodas();
+        filterMenuItems();
+    </script>
+</body>
+</html>
